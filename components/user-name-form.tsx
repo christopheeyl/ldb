@@ -24,7 +24,7 @@ import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
 interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
-  user: Pick<User, "id" | "name">
+  user: Pick<User, "id" | "name" | "email">
 }
 
 type FormData = z.infer<typeof userNameSchema>
@@ -39,6 +39,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
     resolver: zodResolver(userNameSchema),
     defaultValues: {
       name: user?.name || "",
+      email: user?.email || "",
     },
   })
   const [isSaving, setIsSaving] = React.useState<boolean>(false)
@@ -80,17 +81,16 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
       {...props}
     >
       <Card>
-        <CardHeader>
-          <CardTitle>Your Name</CardTitle>
+      <CardHeader>
+          <CardTitle>Votre nom d'affichage</CardTitle>
           <CardDescription>
-            Please enter your full name or a display name you are comfortable
-            with.
+            Entrer votre nom complet ou un nom d'affichage.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="name">
-              Name
+              Nom d'affichage
             </Label>
             <Input
               id="name"
@@ -98,9 +98,25 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
               size={32}
               {...register("name")}
             />
-            {errors?.name && (
-              <p className="px-1 text-xs text-red-600">{errors.name.message}</p>
-            )}
+          </div>
+        </CardContent>
+        <CardHeader>
+          <CardTitle>Votre adresse email</CardTitle>
+          <CardDescription>
+            Entrer votre adresse email
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-1">
+            <Label className="sr-only" htmlFor="email">
+              Adresse email
+            </Label>
+            <Input
+              id="email"
+              className="w-[400px]"
+              size={32}
+              {...register("email")}
+            />
           </div>
         </CardContent>
         <CardFooter>
@@ -112,7 +128,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             {isSaving && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            <span>Save</span>
+            <span>Enregistrer</span>
           </button>
         </CardFooter>
       </Card>

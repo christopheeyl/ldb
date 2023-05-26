@@ -50,6 +50,7 @@ export type MarketingConfig = {
 export type DashboardConfig = {
   mainNav: MainNavItem[]
   sidebarNav: SidebarNavItem[]
+  footerSideBarNav: SidebarNavItem[]
 }
 
 export type SubscriptionPlan = {
@@ -62,4 +63,11 @@ export type UserSubscriptionPlan = SubscriptionPlan &
   Pick<User, "stripeCustomerId" | "stripeSubscriptionId"> & {
     stripeCurrentPeriodEnd: number
     isPro: boolean
+  }
+
+  export type User = {
+    id: number
+    email: string
+    name: string
+    role: string
   }

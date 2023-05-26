@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth/next"
-import { z } from "zod"
+import * as z from "zod"
 
-import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { userNameSchema } from "@/lib/validations/user"
+import { userPatchSchema } from "@/lib/validations/user"
 
 const routeContextSchema = z.object({
   params: z.object({
@@ -11,31 +9,91 @@ const routeContextSchema = z.object({
   }),
 })
 
+export async function GET(
+  req: Request,
+  context: z.infer<typeof routeContextSchema>
+) {
+  try {
+/*     const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return new Response("Unauthorized", { status: 403 })
+    } */
+    
+    // Validate the route params.
+    const { params } = routeContextSchema.parse(context)
+
+    // Get the user.
+    const user = await db.user.findFirst({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        loggedAt: true,
+      },
+      where: {
+        id: params.userId as string,
+      }
+    })
+
+    return new Response(JSON.stringify(user))
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response(JSON.stringify(error.issues), { status: 422 })
+    }
+
+    return new Response(null, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  context: z.infer<typeof routeContextSchema>
+) {
+  try {
+    // Validate the route params.
+    const { params } = routeContextSchema.parse(context)
+
+    // Delete the user.
+    await db.user.delete({
+      where: {
+        id: params.userId as string,
+      },
+    })
+
+    return new Response(null, { status: 204 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response(JSON.stringify(error.issues), { status: 422 })
+    }
+
+    return new Response(null, { status: 500 })
+  }
+}
+
 export async function PATCH(
   req: Request,
   context: z.infer<typeof routeContextSchema>
 ) {
   try {
-    // Validate the route context.
+    // Validate route params.
     const { params } = routeContextSchema.parse(context)
 
-    // Ensure user is authentication and has access to this user.
-    const session = await getServerSession(authOptions)
-    if (!session?.user || params.userId !== session?.user.id) {
-      return new Response(null, { status: 403 })
-    }
-
     // Get the request body and validate it.
-    const body = await req.json()
-    const payload = userNameSchema.parse(body)
+    const json = await req.json()
+    const body = userPatchSchema.parse(json)
 
-    // Update the user.
+    // Update the post.
+    // TODO: Implement sanitization for content.
     await db.user.update({
       where: {
-        id: session.user.id,
+        id: params.userId,
       },
       data: {
-        name: payload.name,
+        email: body.email,
+        name: body.name,
+        role: body.role,
       },
     })
 

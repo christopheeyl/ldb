@@ -1,51 +1,47 @@
-import { Metadata } from "next"
-import Link from "next/link"
+import Link from "next/link";
+import Image from "next/image";
+import { FC } from "react";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import { Icons } from "@/components/icons"
-import { UserAuthForm } from "@/components/user-auth-form"
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
 
-export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
-}
-
-export default function LoginPage() {
+const page: FC = () => {
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Link
-        href="/"
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "absolute left-4 top-4 md:left-8 md:top-8"
-        )}
-      >
-        <>
-          <Icons.chevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </>
-      </Link>
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <div className="flex flex-col space-y-2 text-center">
-          <Icons.logo className="mx-auto h-6 w-6" />
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
-          </p>
+    <div className="min-h-screen flex items-center">
+      <div className="mx-auto w-full max-w-5xl shadow-2xl">
+        <div className="grid md:grid-cols-2 grid-cols-1">
+          <div className="w-full grid gap-8 bg-white text-center p-16">
+            <h1 className="text-3xl font-bold">Livre de bord</h1>
+            <Image src={"/images/logo_chabe-affaires.png"} className="mx-auto" alt="chabe-logo" title="Logo Chabé" width="200" height="200"/>
+          </div>
+          <div className="bg-accent p-16">
+            <h1 className="text-3xl font-semibold mb-2 text-center">Se connecter</h1>
+            <form className="grid grid-rows-3 items-center max-w-xs mx-auto">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input type="email" id="email" placeholder="Email" />
+              </div>
+              <div>
+                <div>
+                  <Label htmlFor="mdp">Mot de passe</Label>
+                  <Input type="mdp" id="mdp" placeholder="Mot de passe" />
+                </div>
+                <Link href="/forgot-password">
+                  <span className="text-sm inline-block hover:text-primary text-chabe hover:underline hover:cursor-pointer transition duration-200">
+                    Mot de passe oublié ?
+                  </span>
+                </Link>
+              </div>
+              <div>
+                <Button className="w-full max-w-xs">Connexion</Button>
+              </div>
+            </form>
+          </div>
         </div>
-        <UserAuthForm />
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          <Link
-            href="/register"
-            className="hover:text-brand underline underline-offset-4"
-          >
-            Don&apos;t have an account? Sign Up
-          </Link>
-        </p>
       </div>
     </div>
   )
 }
+
+export default page;
